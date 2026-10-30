@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700italic,700"
+    rel="stylesheet"
+  />
+  <title>Scratch Card</title>
+
+  <style>
+  @font-face {
+  font-family: 'Valentine-Rosyalin';
+  src: url('./images/Valentine-Rosyalin-Demo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NortHeadline';
+  src: url('./images/NortHeadline-Cond.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+    @font-face {
+  font-family: 'VerandahReverie';
+  src: url('./images/VerandahReverie.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+  html {
+    box-sizing: border-box;
+  }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100dvh;
+      background-color: #f0f0f0;
+    }
+
+    .sc__wrapper {
+      width: auto;
+      height: 100vh;
+      max-width: calc(100vh * (1080 / 1920));
+      aspect-ratio: 1080 / 1920;
+      border: 5px solid white;
+      position: relative;
+    }
+
+    .sc__container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      visibility: hidden;
+    }
+
+  .sc__container img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+  }
+
+  /* ===== MESSAGE GROUP POSITION ===== */
+  #messageGroup {
+    position: absolute;
+
+   top: 66%;
+    left: 53%;
+
+    /* Constrained width forces clean, balanced line wraps */
+    width: 65%;
+
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
+
+    z-index: 1;
+    visibility: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    text-align: center;
+  }
+
+  /* ===== MAIN MESSAGE ===== */
+  #mainMessage {
+    position: relative;
+    width: 100%;
+       max-width: 18ch; /* Forces text to break into balanced lines instead of trailing single words */
+    margin: 0 auto;
+
+    
+    font-family: 'VerandahReverie', serif;
+    font-size: 28px;
+    line-height: 1.15;
+
+    color: #e08295;
+
+    overflow-wrap: break-word;
+  }
+
+  /* ===== SECONDARY MESSAGE ===== */
+  #secondaryMessage {
+   width: 100%;
+max-width: none;
+    margin: 0;
+    transform: translateY(-5px);
+
+   font-family: Georgia, serif;
+font-size: 15px;
+    line-height: 1.15;
+
+    color: #e08295;
+
+    overflow-wrap: break-word;
+  }
+
+
+    
+  .sc__container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  transition: opacity 1.8s ease-in-out;
+}
+
+#scratchCanvas.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  }
+  </style>
+
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <div class="sc__wrapper">
+   <div id="js--sc--container" class="sc__container">
+     <img id="backgroundImage" src="./images/back.png" alt="Background Image" />
+
+     <div id="messageGroup">
+       <div id="mainMessage"></div>
+       <div id="secondaryMessage"></div>
+     </div>
+
+     <canvas id="scratchCanvas"></canvas>
+   </div>
+  </div>
+
+  <audio id="winSound" preload="auto">
+    <source src="./sounds/win.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="bgMusic" preload="auto" loop>
+    <source id="bgMusicSource" src="./sounds/This Christmas_Short.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const SUPABASE_URL = "https://bfzhvulpymbqzwxorzih.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_aLj5jota1g3icfvF7MROIQ_b4-yKlo3";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const BG_MUSIC_VOLUME = 0.5;
+
+    async function loadDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const revealId = params.get("id");
+
+      if (!revealId) return;
+
+      const { data, error } = await supabaseClient
+        .from("vacation_reveals")
+        .select("*")
+        .eq("id", revealId)
+        .single();
+
+      if (error || !data) {
+        console.error("Details load error:", error);
+        return;
+      }
+
+      document.getElementById("mainMessage").textContent = data.main_message || "";
+      document.getElementById("secondaryMessage").textContent = data.secondary_message || "";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("scratchCanvas");
+      const container = document.getElementById("js--sc--container");
+      const backgroundImage = document.getElementById("backgroundImage");
+      const ctx = canvas.getContext("2d");
+
+      const devicePixelRatio = window.devicePixelRatio || 1;
+
+      const containerWidth = container.clientWidth * devicePixelRatio;
+      const containerHeight = container.clientHeight * devicePixelRatio;
+      canvas.width = containerWidth;
+      canvas.height = containerHeight;
+
+      const BOX_REGION = {
+        x: 0.10,
+        y: 0.55,
+        width: 0.82,
+        height: 0.28
+      };
+
+      let isScratching = false;
+      let hasFiredConfetti = false;
+      let scratchMovesInBox = 0;
+      const MOVES_THRESHOLD = 200;
+
+      let lastX = null;
+      let lastY = null;
+
+      const frontImage = new Image();
+      frontImage.src = "./images/front.png";
+
+      frontImage.onload = () => {
+        ctx.drawImage(frontImage, 0, 0, containerWidth, containerHeight);
+        ctx.globalCompositeOperation = "destination-out";
+
+        backgroundImage.style.display = "block";
+        container.style.visibility = "visible";
+
+        canvas.addEventListener("mousedown", startScratch);
+        canvas.addEventListener("touchstart", startScratch, { passive: false });
+
+        canvas.addEventListener("mouseup", endScratch);
+        canvas.addEventListener("mouseleave", endScratch);
+        canvas.addEventListener("touchend", endScratch);
+        canvas.addEventListener("touchcancel", endScratch);
+      };
+
+      function startScratch(event) {
+        event.preventDefault();
+        const bgMusic = document.getElementById("bgMusic");
+
+        if (bgMusic && bgMusic.paused) {
+          bgMusic.volume = BG_MUSIC_VOLUME;
+          bgMusic.play().catch(error => {
+            console.log("Background music could not play:", error);
+          });
+        }
+        document.getElementById("messageGroup").style.visibility = "visible";
+        const winSound = document.getElementById("winSound");
+
+        if (winSound && winSound.paused) {
+          winSound.volume = 0;
+          winSound.play()
+            .then(() => {
+              winSound.pause();
+              winSound.currentTime = 0;
+              winSound.volume = 1;
+            })
+            .catch(() => {
+              winSound.volume = 1;
+            });
+        }
+        isScratching = true;
+        lastX = null;
+        lastY = null;
+
+        scratch(event);
+
+        canvas.addEventListener("mousemove", scratch);
+        canvas.addEventListener("touchmove", scratch, { passive: false });
+      }
+
+      function endScratch() {
+        isScratching = false;
+        lastX = null;
+        lastY = null;
+
+        canvas.removeEventListener("mousemove", scratch);
+        canvas.removeEventListener("touchmove", scratch);
+      }
+
+      function scratch(event) {
+        if (!isScratching) return;
+        event.preventDefault();
+
+        const rect = canvas.getBoundingClientRect();
+        const scale = devicePixelRatio;
+
+        let clientX, clientY;
+        if (event.touches && event.touches[0]) {
+          clientX = event.touches[0].clientX;
+          clientY = event.touches[0].clientY;
+        } else {
+          clientX = event.clientX;
+          clientY = event.clientY;
+        }
+
+        const x = (clientX - rect.left) * scale;
+        const y = (clientY - rect.top) * scale;
+        const radius = 16 * scale;
+
+        if (lastX !== null && lastY !== null) {
+          const dx = x - lastX;
+          const dy = y - lastY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const steps = Math.max(1, Math.ceil(distance / (radius * 0.5)));
+
+          for (let i = 1; i <= steps; i++) {
+            const ix = lastX + (dx * i) / steps;
+            const iy = lastY + (dy * i) / steps;
+
+            ctx.beginPath();
+            ctx.arc(ix, iy, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            trackProgress(ix, iy);
+          }
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          trackProgress(x, y);
+        }
+
+        lastX = x;
+        lastY = y;
+      }
+
+      function trackProgress(px, py) {
+        if (hasFiredConfetti) return;
+
+        const nx = px / canvas.width;
+        const ny = py / canvas.height;
+
+        if (
+          nx >= BOX_REGION.x &&
+          nx <= BOX_REGION.x + BOX_REGION.width &&
+          ny >= BOX_REGION.y &&
+          ny <= BOX_REGION.y + BOX_REGION.height
+        ) {
+          scratchMovesInBox++;
+
+          if (scratchMovesInBox >= MOVES_THRESHOLD) {
+            hasFiredConfetti = true;
+            launchConfetti();
+          }
+        }
+      }
+
+      function launchConfetti() {
+        canvas.classList.add("fade-out");
+        const winSound = document.getElementById("winSound");
+        if (winSound) {
+          winSound.currentTime = 0;
+          winSound.play().catch(error => {
+            console.log("Win sound could not play:", error);
+          });
+        }
+
+        if (typeof confetti !== "function") return;
+
+        const COLORS = ["#D85A85", "#E08295", "#F7C4D5"];
+
+        confetti({
+          ticks: 350,
+          gravity: 1.2,
+          particleCount: 220,
+          spread: 70,
+          startVelocity: 45,
+          origin: { y: 0.6 },
+          colors: COLORS
+        });
+
+        setTimeout(() => {
+          confetti({
+            ticks: 350,
+            gravity: 1.2,
+            particleCount: 260,
+            spread: 80,
+            startVelocity: 55,
+            origin: { y: 0.5 },
+            colors: COLORS
+          });
+        }, 2000);
+
+        setTimeout(() => {
+          confetti({
+            ticks: 350,
+            gravity: 1.2,
+            particleCount: 300,
+            spread: 90,
+            startVelocity: 60,
+            origin: { y: 0.6 },
+            colors: COLORS
+          });
+        }, 4000);
+
+        const duration = 1200;
+        const end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            ticks: 350,
+            gravity: 1.2,
+            particleCount: 6,
+            spread: 70,
+            startVelocity: 30,
+            origin: { x: 0.1, y: 0.8 },
+            colors: COLORS
+          });
+
+          confetti({
+            ticks: 350,
+            gravity: 1.2,
+            particleCount: 6,
+            spread: 70,
+            startVelocity: 30,
+            origin: { x: 0.9, y: 0.8 },
+            colors: COLORS
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      }
+    });
+
+    loadDetails();
+
+    window.addEventListener("resize", () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
+

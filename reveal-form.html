@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personalise Your Reveal</title>
+
+  <style>
+    @font-face {
+      font-family: 'Samantha';
+      src: url('./images/Samantha_Calligraphy.ttf') format('truetype');
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #dfd4d2;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #8e515a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 28px 18px;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 520px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 88%;
+      max-width: 430px;
+      margin: 0 auto 22px auto;
+      display: block;
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.55);
+      border: 2px solid rgba(142, 81, 90, 0.25);
+      border-radius: 28px;
+      padding: 34px 26px;
+      box-shadow: 0 12px 34px rgba(142, 81, 90, 0.18);
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 34px;
+      font-weight: normal;
+      color: #8e515a;
+    }
+
+    .intro {
+      margin: 0 0 28px 0;
+      font-size: 16px;
+      line-height: 1.45;
+      color: #8e515a;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 18px 0 7px 0;
+      font-size: 15px;
+      font-weight: bold;
+      color: #8e515a;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 2px solid rgba(142, 81, 90, 0.28);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 17px;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #8e515a;
+      background: rgba(255, 255, 255, 0.82);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #8e515a;
+      box-shadow: 0 0 0 4px rgba(142, 81, 90, 0.12);
+    }
+
+    .hint {
+      text-align: left;
+      margin-top: 6px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 26px;
+      border: none;
+      border-radius: 999px;
+      padding: 16px 22px;
+      background: #8e515a;
+      color: white;
+      font-size: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(142, 81, 90, 0.28);
+    }
+
+    button:hover { opacity: 0.92; }
+
+    #resultBox,
+    #lockedBox {
+      display: none;
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.7);
+      border: 2px solid rgba(142, 81, 90, 0.22);
+      word-break: break-word;
+    }
+
+    #resultBox h2,
+    #lockedBox h2 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      font-weight: normal;
+    }
+
+    #revealLink,
+    #editLink {
+      display: block;
+      margin-top: 12px;
+      color: #8e515a;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .copy-button {
+      margin-top: 14px;
+      padding: 12px 18px;
+      font-size: 15px;
+    }
+
+    .edit-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(142, 81, 90, 0.22);
+    }
+
+    .small-note {
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 28px 20px; }
+      h1 { font-size: 28px; }
+      .logo { width: 94%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-wrapper">
+    <img
+      class="logo"
+      src="./images/WITHLOVECW.png"
+      alt="With Love CW"
+    />
+
+    <div class="form-card">
+      <h1 id="pageTitle">Personalise Your Reveal</h1>
+
+      <p class="intro" id="introText">
+        Enter the text you'd like to appear on your scratch reveal!
+      </p>
+
+      <form id="revealForm">
+        
+<label for="mainMessage">Baby's Name</label>
+
+<textarea
+  id="mainMessage"
+  name="mainMessage"
+  placeholder="Baby Johnson"
+  required
+></textarea>
+
+<div class="hint">
+Enter the baby's name exactly as you'd like it to appear.<br>
+Example: Baby Johnson or Baby Smith.<br>
+</div>
+		  
+		<label for="secondaryMessage">Due Date / Announcement Message</label>
+
+<textarea
+  id="secondaryMessage"
+  name="secondaryMessage"
+  placeholder="Coming December"
+  required
+></textarea>
+
+<div class="hint">
+  Enter your due date or short announcement exactly as you'd like it to appear.<br>
+Examples: Coming December, Coming 2027 or Due January.
+</div>
+		  
+	
+
+
+		 <div class="hint" style="margin-top: 20px; line-height: 1.8;">
+  <strong>Need inspiration? Example wording:</strong><br>
+  Baby Johnson / Coming December<br>
+  Baby Williams / Arriving 2027<br>
+  Baby Smith / Due January<br>
+  Baby Parker / Coming Soon
+</div>
+
+<div class="hint" style="margin-top: 12px;">
+  Please keep your wording short and sweet, as longer messages
+  may not fit neatly inside the scratch reveal area.
+</div>
+		  
+
+
+        <button type="submit" id="submitButton">
+          Create My Reveal
+        </button>
+      </form>
+
+      <div id="resultBox">
+        <h2>Your reveal is ready!</h2>
+
+        <p>
+          <strong>Share this link with friends & family:</strong>
+        </p>
+
+        <a id="revealLink" href="#" target="_blank"></a>
+
+        <button class="copy-button" id="copyButton" type="button">
+          Copy Reveal Link
+        </button>
+
+        <div class="edit-section" id="editSection">
+          <p>
+            <strong>Your private edit link:</strong>
+          </p>
+
+          <p class="small-note">
+            Please save this link if you need to make changes. Your edit link is available for 24 hours only.
+          </p>
+
+          <a id="editLink" href="#" target="_blank"></a>
+
+          <button class="copy-button" id="copyEditButton" type="button">
+            Copy Edit Link
+          </button>
+        </div>
+      </div>
+
+      <div id="lockedBox">
+        <h2>This reveal is now locked</h2>
+        <p>
+          Your 24-hour edit window has now passed, so this reveal can no longer be changed.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://bfzhvulpymbqzwxorzih.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_aLj5jota1g3icfvF7MROIQ_b4-yKlo3";
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const form = document.getElementById("revealForm");
+    const resultBox = document.getElementById("resultBox");
+    const lockedBox = document.getElementById("lockedBox");
+    const revealLink = document.getElementById("revealLink");
+    const editLink = document.getElementById("editLink");
+    const copyButton = document.getElementById("copyButton");
+    const copyEditButton = document.getElementById("copyEditButton");
+    const pageTitle = document.getElementById("pageTitle");
+    const introText = document.getElementById("introText");
+    const submitButton = document.getElementById("submitButton");
+
+    const params = new URLSearchParams(window.location.search);
+    const editToken = params.get("edit");
+
+    let editingRevealId = null;
+
+    function createUniqueId() {
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    function createEditToken() {
+      return Math.random().toString(36).substring(2, 12).toUpperCase();
+    }
+
+    function getBasePath() {
+      return window.location.pathname.substring(
+        0,
+        window.location.pathname.lastIndexOf("/") + 1
+      );
+    }
+
+    function getRevealPagePath() {
+      return getBasePath() + "index.html";
+    }
+
+	 function getFormPagePath() {
+  return getBasePath() + "reveal-form.html";
+}
+
+    async function loadEditMode() {
+      if (!editToken) return;
+
+      pageTitle.textContent = "Edit Your Reveal";
+      introText.textContent =
+        "You can update your personalised wording below if you are still within your 24-hour edit window.";
+      submitButton.textContent = "Save My Changes";
+
+      const { data, error } = await supabaseClient
+       .from("vacation_reveals")
+        .select("*")
+        .eq("edit_token", editToken)
+        .single();
+
+      if (error || !data) {
+        form.style.display = "none";
+        lockedBox.style.display = "block";
+        return;
+      }
+
+      const now = new Date();
+      const lockedAfter = new Date(data.locked_after);
+
+      if (now > lockedAfter) {
+        form.style.display = "none";
+        lockedBox.style.display = "block";
+        return;
+      }
+
+      editingRevealId = data.id;
+
+    document.getElementById("mainMessage").value =
+  data.main_message || "";
+
+document.getElementById("secondaryMessage").value =
+  data.secondary_message || "";
+		
+    }
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const mainMessage =
+  document.getElementById("mainMessage").value.trim();
+
+const secondaryMessage =
+  document.getElementById("secondaryMessage").value.trim();
+		
+      if (editToken && editingRevealId) {
+    const updateData = {
+  main_message: mainMessage,
+  secondary_message: secondaryMessage
+};
+
+        
+
+        const { error } = await supabaseClient
+         .from("vacation_reveals")
+.update(updateData)
+          .eq("id", editingRevealId)
+          .eq("edit_token", editToken);
+
+        if (error) {
+          alert("Something went wrong. Please try again.");
+          console.error(error);
+          return;
+        }
+
+        const finalLink =
+          window.location.origin +
+          getRevealPagePath() +
+          "?id=" +
+          editingRevealId +
+          "&updated=" +
+          Date.now();
+
+        const finalEditLink =
+          window.location.origin +
+          getFormPagePath() +
+          "?edit=" +
+          editToken;
+
+        revealLink.href = finalLink;
+        revealLink.textContent = finalLink;
+
+        editLink.href = finalEditLink;
+        editLink.textContent = finalEditLink;
+
+        document.getElementById("editSection").style.display =
+          "block";
+
+        resultBox.querySelector("h2").textContent =
+          "Your changes have been saved!";
+
+        resultBox.querySelector("p").innerHTML =
+          "<strong>Share this updated reveal link with friends & family:</strong>";
+
+        resultBox.style.display = "block";
+        form.style.display = "none";
+
+        return;
+      }
+
+      const id = createUniqueId();
+      const newEditToken = createEditToken();
+
+      const lockedAfter = new Date();
+      lockedAfter.setHours(lockedAfter.getHours() + 24);
+
+      const { error } = await supabaseClient
+       .from("vacation_reveals")
+.insert([
+  {
+    id: id,
+    main_message: mainMessage,
+    secondary_message: secondaryMessage,
+    edit_token: newEditToken,
+    locked_after: lockedAfter.toISOString()
+  }
+]);
+
+      if (error) {
+        alert("Something went wrong. Please try again.");
+        console.error(error);
+        return;
+      }
+
+      const finalLink =
+        window.location.origin +
+        getRevealPagePath() +
+        "?id=" +
+        id;
+
+      const finalEditLink =
+        window.location.origin +
+        getFormPagePath() +
+        "?edit=" +
+        newEditToken;
+
+      revealLink.href = finalLink;
+      revealLink.textContent = finalLink;
+
+      editLink.href = finalEditLink;
+      editLink.textContent = finalEditLink;
+
+      resultBox.style.display = "block";
+      form.style.display = "none";
+    });
+
+    copyButton.addEventListener("click", async function() {
+      await navigator.clipboard.writeText(revealLink.href);
+      copyButton.textContent = "Copied!";
+    });
+
+    copyEditButton.addEventListener("click", async function() {
+      await navigator.clipboard.writeText(editLink.href);
+      copyEditButton.textContent = "Copied!";
+    });
+
+    loadEditMode();
+  </script>
+</body>
+</html>
